@@ -1,0 +1,38 @@
+# 版本号
+version: '3'
+
+networks:
+  tutehostnet:
+    driver: bridge
+
+# 定义服务
+services:
+  tute.thinkphp3.2:
+    build:
+      context: ./thinkphp3.2
+    volumes:
+      - ./../:/var/www/html
+    depends_on:
+      - tute.mysql
+    links:
+      - tute.mysql
+    ports:
+      - "8111:80"
+    environment:
+      APACHE_DOCUMENT_ROOT: /var/www/html/Public
+      XDEBUG_CONFIG: "remote_host=host.docker.internal"
+
+  tute.mysql:
+    build:
+      context: ./mysql
+    image: mysql:5.6
+    volumes:
+      - ./mysql/custom.cnf:/etc/mysql/conf.d/custom.cnf
+      - ./mysql/data:/var/lib/mysql
+    ports:
+      - "3317:3306"
+    environment:
+      - MYSQL_USER=tute
+      - MYSQL_PASSWORD=tute
+      - MYSQL_ALLOW_EMPTY_PASSWORD=true
+      - MYSQL_DATABASE=performancems
